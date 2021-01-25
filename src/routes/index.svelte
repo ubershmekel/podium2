@@ -1,5 +1,14 @@
 <script>
 	import successkid from 'images/successkid.jpg';
+
+	import io from 'socket.io-client';
+	const socket = io();
+	
+	function hi() {
+		console.log("clicked");
+		socket.emit('hi', 'bla');
+	}
+
 </script>
 
 <style>
@@ -48,5 +57,7 @@
 </figure>
 
 <div>Does it work? Yes it do</div>
+
+<button on:click={hi}>hi</button>
 
 <p><strong>Try editing this file (src/routes/index.svelte) to test live reloading.</strong></p>

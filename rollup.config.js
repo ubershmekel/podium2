@@ -11,6 +11,7 @@ import typescript from '@rollup/plugin-typescript';
 import config from 'sapper/config/rollup.js';
 import pkg from './package.json';
 
+
 const mode = process.env.NODE_ENV;
 const dev = mode === 'development';
 const legacy = !!process.env.SAPPER_LEGACY_BUILD;
@@ -46,6 +47,7 @@ export default {
 				dedupe: ['svelte']
 			}),
 			commonjs(),
+			// json(),
 			typescript({ sourceMap: dev }),
 
 			legacy && babel({
@@ -108,21 +110,4 @@ export default {
 		onwarn,
 	},
 
-	// serviceworker: {
-	// 	input: config.serviceworker.input().replace(/\.js$/, '.ts'),
-	// 	output: config.serviceworker.output(),
-	// 	plugins: [
-	// 		resolve(),
-	// 		replace({
-	// 			'process.browser': true,
-	// 			'process.env.NODE_ENV': JSON.stringify(mode)
-	// 		}),
-	// 		commonjs(),
-	// 		typescript({ sourceMap: dev }),
-	// 		!dev && terser()
-	// 	],
-
-	// 	preserveEntrySignatures: false,
-	// 	onwarn,
-	// }
 };
