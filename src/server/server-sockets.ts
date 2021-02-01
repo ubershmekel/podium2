@@ -1,11 +1,11 @@
 import type socketio from 'socket.io';
-import { names, NewConnectionHi, socketPort } from '../client/socket-constants';
-import { Game } from './game';
+import { names, NewConnectionHi, Player, PlayerNameId, socketPort } from '../client/socket-constants';
+import { ServerGameState } from './game';
 
-const activeGames: {[gameId: string]: Game} = {};
+const activeGames: {[gameId: string]: ServerGameState | undefined} = {};
 
-function sendUsersList(game: Game) {
-  const playersList = [];
+function sendUsersList(game: ServerGameState) {
+  const playersList: PlayerNameId[] = [];
   for(const key in game.players) {
     const player = game.players[key];
     playersList.push({
@@ -21,24 +21,28 @@ function sendUsersList(game: Game) {
 export function onConnect(socket: socketio.Socket) {
   console.log('a user connected');
 
-  let hi: NewConnectionHi = null;
+  let player: Player | null = null;
+  let gameId: string | null = null;
 
-  socket.on(names.userId, (newHi: NewConnectionHi) => {
-    hi = newHi;
-    console.log('uid', hi.userId);
+  socket.on(names.userId, (hi: NewConnectionHi) => {
+    console.log(`uid: ${hi.userId} gameid: ${hi.gameId}`);
 
-    let game: Game = activeGames[hi.gameId];
-    if (!game) {
-      game = new Game();
+    let existingGame = activeGames[hi.gameId];
+    let game: ServerGameState;
+    if (existingGame) {
+      game = existingGame;
+    } else {
+      game = new ServerGameState();
       activeGames[hi.gameId] = game;
     }
-    const playa = game.players[hi.userId];
-    if (!playa) {
-      game.players[hi.userId] = {
+    const existingPlayer = game.players[hi.userId];
+    if (!existingPlayer) {
+      player = {
         userId: hi.userId,
         userName: hi.userName,
         socket: socket,
       };
+      game.players[hi.userId] = player;
     }
 
     socket.on('disconnect', function() {
@@ -51,21 +55,30 @@ export function onConnect(socket: socketio.Socket) {
   });
 
   socket.on(names.buttonPress, (msg) => {
-    console.log('button pressed', msg);
+    console.log('button pressed', player ? player.userName : '-?-', msg);
     // io.emit('button pressed', msg);
   });
 
   socket.on(names.nameChange, (newName) => {
     console.log('name changed', newName);
-    const game = activeGames[hi.gameId];
-    let playa = game.players[hi.userId];
-    if (playa) {
-      playa.userName = newName;
+    if (player) {
+      player.userName = newName;
     } else {
       console.log("ERROR invalid user");
     }
     // io.emit('button pressed', msg);
     // io.emit(names.usersList, players);
+    if (!gameId) {
+      console.log("gameId not found for name change");
+      return;
+    }
+
+    const game = activeGames[gameId];
+    if (!game) {
+      console.log("game not found for name change");
+      return
+    }
+
     sendUsersList(game);
   });
 }

@@ -9,6 +9,11 @@ export const names = {
   usersList: "usersList",
 }
 
+export interface PlayerNameId {
+  userId: string;
+  userName: string;
+}
+
 export interface Player { 
   userId: string;
   userName: string;

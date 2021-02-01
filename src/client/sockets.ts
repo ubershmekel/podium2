@@ -1,8 +1,6 @@
 // This file is about communicating from the client to the server
 
 import { io } from 'socket.io-client';
-import type { Game } from '../server/game';
-import { getOrGenerateUserId } from './data';
 import { names, GameState, NewConnectionHi, socketPort } from './socket-constants';
 
 // const socket = io(':' + socketPort);

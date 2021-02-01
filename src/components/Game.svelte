@@ -8,18 +8,18 @@
   } from "../client/sockets";
   import { getName, getOrGenerateUserId, saveName } from "../client/data";
   import { names } from "../client/socket-constants";
-  import type { Player, NewConnectionHi } from "../client/socket-constants";
+  import type { NewConnectionHi, PlayerNameId } from "../client/socket-constants";
 
-  export let userName: string;
+  let userName: string;
 
-  export let title: string;
-  export let topics: any[];
-  export let answerA: string;
-  export let answerB: string;
+  let title: string;
+  let topics: any[];
+  let answerA: string;
+  let answerB: string;
 
-  export let users: Player[] = [];
-  export let speakerA: string;
-  export let speakerB: string;
+  let users: PlayerNameId[] = [];
+  let speakerA: string;
+  let speakerB: string;
 
   $: if (userName) {
     console.log("username", userName);
@@ -35,11 +35,11 @@
   function handleNextTopic() {
     sendButtonPressed("next topic");
     console.log("happening");
-    const chosenI = randomInt(0, topics.length);
-    const chosen = topics[chosenI];
-    title = chosen.title;
-    answerA = chosen.answerA;
-    answerB = chosen.answerB;
+    // const chosenI = randomInt(0, topics.length);
+    // const chosen = topics[chosenI];
+    // title = chosen.title;
+    // answerA = chosen.answerA;
+    // answerB = chosen.answerB;
 
     // speakerA = users[0];
     // speakerB = users[1];
@@ -56,7 +56,7 @@
   function main() {
     // handleNextTopic();
 
-    on(names.usersList, (userList) => {
+    on(names.usersList, (userList: PlayerNameId[]) => {
       console.log("userslist", userList);
       users = userList;
     });
