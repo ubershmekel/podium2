@@ -3,6 +3,8 @@ import polka from 'polka';
 import compression from 'compression';
 import * as sapper from '@sapper/server';
 import socketio from 'socket.io';
+import { onConnect } from './server/server-sockets';
+
 
 
 const { PORT, NODE_ENV } = process.env;
@@ -26,8 +28,9 @@ const io = new socketio.Server(server, {
 });
 
 io.on('connection', function(socket) {
-	socket.on('hi', (res) => console.log('socket res', res));
+	socket.on('hi', (res) => console.log('socket hi res', res));
 })
+io.on('connection', onConnect);
 
 // server.listen(PORT, _ => {
 // 	console.log(`> Running on localhost:${PORT}`);
