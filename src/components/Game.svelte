@@ -9,11 +9,17 @@
   import { getName, getOrGenerateUserId, saveName } from "../client/data";
   import { names } from "../client/socket-constants";
   import type { NewConnectionHi, PlayerNameId } from "../client/socket-constants";
+import type { Discussion } from "../client/topics";
 
   let userName: string;
 
-  let title: string;
-  let topics: any[];
+  let discussion: Discussion = {
+    answerA: '',
+    answerB: '',
+    category: '',
+    id: '',
+    title: '',
+  };
   let answerA: string;
   let answerB: string;
 
@@ -61,6 +67,10 @@
       users = userList;
     });
 
+    on(names.discussionChange, (newDiscussion: Discussion) => {
+      discussion = newDiscussion;
+    });
+
     onConnect(() => {
       const gameId = "onegame-temp-id";
       if (!userName) {
@@ -83,14 +93,14 @@
   <h1>Closing Arguments</h1>
   <input bind:value={userName} />
 
-  <div class="title">{title}</div>
+  <div class="title">{discussion.title}</div>
 
   <button class="answer answer-text" on:click={(event) => handleAnswer(0)}
-    >{answerA}</button
+    >{discussion.answerA}</button
   >
 
   <button class="answer answer-text" on:click={(event) => handleAnswer(1)}
-    >{answerB}</button
+    >{discussion.answerB}</button
   >
 
   <p class="speaker">a {speakerA}</p>

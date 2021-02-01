@@ -7,6 +7,7 @@ export const names = {
   buttonPress: "buttonPress",
   userId: "userId",
   usersList: "usersList",
+  discussionChange: "discussionChange",
 }
 
 export interface PlayerNameId {

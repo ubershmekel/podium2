@@ -16,7 +16,7 @@ const {server} = polka() // You can also use Express
 		sirv('static', { dev }),
 		sapper.middleware()
 	)
-	.listen(PORT, err => {
+	.listen(PORT, (err: Error) => {
 		if (err) console.log('error', err);
 	});
 
@@ -28,7 +28,7 @@ const io = new socketio.Server(server, {
 });
 
 io.on('connection', function(socket) {
-	socket.on('hi', (res) => console.log('socket hi res', res));
+	socket.on('hi', (res: string) => console.log('socket hi res', res));
 })
 io.on('connection', onConnect);
 

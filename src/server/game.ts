@@ -18,7 +18,7 @@ export class ServerGameState {
   activeVotes: Vote[];
 
   constructor() {
-
+    this.nextTopic();
   }
 
   nextTopic() {
@@ -40,7 +40,7 @@ export class ServerGameState {
 }
 
 
-function randomInt(min, maxExcluded) {
+function randomInt(min: number, maxExcluded: number) {
   const delta = maxExcluded - min;
   return Math.floor(min + Math.random() * delta);
 }
