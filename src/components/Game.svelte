@@ -1,7 +1,6 @@
 <script lang="ts">
   import {
     sendButtonPressed,
-    sendMyNameIs,
     on,
     onConnect,
     sendHi,
@@ -9,9 +8,11 @@
   import { getName, getOrGenerateUserId, saveName } from "../client/data";
   import { names } from "../client/socket-constants";
   import type { NewConnectionHi, PlayerNameId } from "../client/socket-constants";
-import type { Discussion } from "../client/topics";
+  import type { Discussion } from "../client/topics";
+  import { userName } from "../client/stores";
+  import { get } from 'svelte/store';
 
-  let userName: string;
+
 
   let discussion: Discussion = {
     answerA: '',
@@ -20,18 +21,11 @@ import type { Discussion } from "../client/topics";
     id: '',
     title: '',
   };
-  let answerA: string;
-  let answerB: string;
 
   let users: PlayerNameId[] = [];
   let speakerA: string;
   let speakerB: string;
 
-  $: if (userName) {
-    console.log("username", userName);
-    sendMyNameIs(userName);
-    saveName(userName);
-  }
 
   function randomInt(min: number, maxExcluded: number) {
     const delta = maxExcluded - min;
@@ -67,45 +61,31 @@ import type { Discussion } from "../client/topics";
       users = userList;
     });
 
-    on(names.discussionChange, (newDiscussion: Discussion) => {
+    on(names.newRound, (newDiscussion: Discussion) => {
       discussion = newDiscussion;
     });
 
-    onConnect(() => {
-      const gameId = "onegame-temp-id";
-      if (!userName) {
-        userName = getName();
-      }
-      console.log("connected");
-      const newConnectionHi: NewConnectionHi = {
-        userId: getOrGenerateUserId(),
-        gameId,
-        userName,
-      };
-      sendHi(newConnectionHi);
-    });
+
   }
 
   main();
 </script>
 
 <div class="game">
-  <h1>Closing Arguments</h1>
-  <input bind:value={userName} />
 
   <div class="title">{discussion.title}</div>
 
   <button class="answer answer-text" on:click={(event) => handleAnswer(0)}
-    >{discussion.answerA}</button
+    >{discussion.answerA} [{speakerB}]</button
   >
 
   <button class="answer answer-text" on:click={(event) => handleAnswer(1)}
-    >{discussion.answerB}</button
+    >{discussion.answerB} [{speakerA}]</button
   >
 
-  <p class="speaker">a {speakerA}</p>
+  <p class="speaker">a </p>
   vs
-  <p class="speaker">b {speakerB}</p>
+  <p class="speaker">b </p>
 
   <div class="admin">
     <button on:click={handleEndRound}>End Round</button>
@@ -128,13 +108,6 @@ import type { Discussion } from "../client/topics";
     margin: 0 auto;
   }
 
-  h1 {
-    color: #333;
-    text-transform: uppercase;
-    font-size: 1.5em;
-    font-weight: 100;
-  }
-
   .title {
     font-size: 4em;
   }
@@ -145,10 +118,18 @@ import type { Discussion } from "../client/topics";
     }
   }
 
+  @media (max-width: 640px) {
+    .game {
+      max-width: none;
+    }
+    .title {
+      font-size: 2.5em;
+    }
+  }
+
   .answer {
     /* border-bottom: 2px solid #666; */
     display: inline-block;
-    width: 25%;
     /* box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2); */
     margin: 0.5em 0.5em 0.5em 1em;
     padding: 0.5em;

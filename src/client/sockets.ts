@@ -5,6 +5,7 @@ import { names, GameState, NewConnectionHi, socketPort } from './socket-constant
 
 // const socket = io(':' + socketPort);
 const socket = io();
+console.log("initializing sockets");
 
 export function sendHi(hi: NewConnectionHi) {
   socket.emit(names.userId, hi);

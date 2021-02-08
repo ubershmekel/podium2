@@ -33,11 +33,11 @@ export function onConnect(socket: socketio.Socket) {
     let game: ServerGameState;
     if (existingGame) {
       game = existingGame;
-      socket.emit(names.discussionChange, game.discussion);
+      socket.emit(names.newRound, game.discussion);
     } else {
       game = new ServerGameState();
       activeGames[gameId] = game;
-      sendToGamePlayers(game, names.discussionChange, game.discussion);
+      sendToGamePlayers(game, names.newRound, game.discussion);
     }
     
     const existingPlayer = game.players[hi.userId];
@@ -62,7 +62,7 @@ export function onConnect(socket: socketio.Socket) {
       console.log('button pressed', player ? player.userName : '-?-', msg);
       if (msg === 'next topic') {
         game.nextTopic();
-        sendToGamePlayers(game, names.discussionChange, game.discussion);
+        sendToGamePlayers(game, names.newRound, game.discussion);
       }
       // io.emit('button pressed', msg);
     });

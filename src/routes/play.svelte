@@ -6,8 +6,12 @@
 	<title>Play</title>
 </svelte:head>
 
-<h1>Play</h1>
-
-<p>This is the 'play' page.</p>
+<!-- <h1>We Argue About...</h1> -->
 
 <Game></Game>
+
+<style>
+/* h1 {
+  font-size: 1.3em;
+} */
+</style>
