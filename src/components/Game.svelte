@@ -5,14 +5,9 @@
     onConnect,
     sendHi,
   } from "../client/sockets";
-  import { getName, getOrGenerateUserId, saveName } from "../client/data";
   import { names } from "../client/socket-constants";
-  import type { NewConnectionHi, PlayerNameId } from "../client/socket-constants";
-  import type { Discussion } from "../client/topics";
+  import type { PlayerNameId, Discussion, NewRound } from "../client/socket-constants";
   import { userName } from "../client/stores";
-  import { get } from 'svelte/store';
-
-
 
   let discussion: Discussion = {
     answerA: '',
@@ -53,6 +48,14 @@
     sendButtonPressed("end round");
   }
 
+  function userIdToName(userId: string) {
+    for (const user of users) {
+      if (user.userId === userId) {
+        return user.userName;
+      }
+    }
+  }
+
   function main() {
     // handleNextTopic();
 
@@ -61,8 +64,12 @@
       users = userList;
     });
 
-    on(names.newRound, (newDiscussion: Discussion) => {
-      discussion = newDiscussion;
+    on(names.newRound, (round: NewRound) => {
+      // discussion = newDiscussion;
+      console.log("new round", round);
+      discussion = round.discussion;
+      speakerA = userIdToName(round.speakerA);
+      speakerB = userIdToName(round.speakerB);
     });
 
 
@@ -83,10 +90,6 @@
     >{discussion.answerB} [{speakerA}]</button
   >
 
-  <p class="speaker">a </p>
-  vs
-  <p class="speaker">b </p>
-
   <div class="admin">
     <button on:click={handleEndRound}>End Round</button>
     <button on:click={handleNextTopic}>Next Topic</button>
@@ -98,6 +101,8 @@
       {user.userName};
     {/each}
   </p>
+
+  <p>You are: {$userName}</p>
 </div>
 
 <style>
@@ -139,5 +144,9 @@
 
   .answer:hover {
     box-shadow: 0 0 6px rgb(35 173 255);
+  }
+
+  .admin {
+    margin-top: 8em;
   }
 </style>

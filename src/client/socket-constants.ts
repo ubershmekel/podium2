@@ -32,3 +32,18 @@ export interface GameState {
   speakerA: string;
   speakerB: string;
 }
+
+export interface Discussion {
+  id: string;
+  title: string;
+  answerA: string;
+  answerB: string;
+  category: string;
+}
+
+export interface NewRound {
+  discussion: Discussion;
+  speakerA: string;
+  speakerB: string;
+  // endTime: Date;
+}

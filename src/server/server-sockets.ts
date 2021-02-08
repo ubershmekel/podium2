@@ -1,5 +1,6 @@
+import type { Server } from 'http';
 import type socketio from 'socket.io';
-import { names, NewConnectionHi, Player, PlayerNameId, socketPort } from '../client/socket-constants';
+import { names, NewConnectionHi, NewRound, Player, PlayerNameId, socketPort } from '../client/socket-constants';
 import { ServerGameState } from './game';
 
 const activeGames: {[gameId: string]: ServerGameState | undefined} = {};
@@ -22,6 +23,18 @@ function sendUsersList(game: ServerGameState) {
   return sendToGamePlayers(game, names.usersList, playersList);
 }
 
+function sendRoundData(game: ServerGameState) {
+  sendToGamePlayers(game, names.newRound, roundData(game));
+}
+
+function roundData(game: ServerGameState): NewRound {
+  return {
+    discussion: game.discussion,
+    speakerA: game.speakerA,
+    speakerB: game.speakerB,
+  };
+}
+
 export function onConnect(socket: socketio.Socket) {
   console.log('a user connected');
 
@@ -33,11 +46,12 @@ export function onConnect(socket: socketio.Socket) {
     let game: ServerGameState;
     if (existingGame) {
       game = existingGame;
-      socket.emit(names.newRound, game.discussion);
+      socket.emit(names.newRound, roundData(game));
     } else {
+      console.log("creating game");
       game = new ServerGameState();
       activeGames[gameId] = game;
-      sendToGamePlayers(game, names.newRound, game.discussion);
+      sendRoundData(game);
     }
     
     const existingPlayer = game.players[hi.userId];
@@ -61,8 +75,8 @@ export function onConnect(socket: socketio.Socket) {
     socket.on(names.buttonPress, (msg: string) => {
       console.log('button pressed', player ? player.userName : '-?-', msg);
       if (msg === 'next topic') {
-        game.nextTopic();
-        sendToGamePlayers(game, names.newRound, game.discussion);
+        game.nextRound();
+        sendRoundData(game);
       }
       // io.emit('button pressed', msg);
     });

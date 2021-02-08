@@ -1,5 +1,7 @@
 // This file contains the topics for discussion
 
+import type { Discussion } from "./socket-constants";
+
 const topicsText = `Prostitution	Prostitution should be legal	Prostitution should be illegal	Ethics
 Death Penalty	I'm for a death penalty	I'm against a death penalty	Ethics
 Donald Trump	I like Donald Trump	I don't like Donald Trump	Politics
@@ -36,14 +38,6 @@ Which is worse?	Sand	Insects	Silly
 Which is worse?	Seafood	Lettuce	Silly
 Better to lose just...	One eye	Two ears	Silly
 Google is...	Evil	Good	Finance`
-
-export interface Discussion {
-  id: string;
-  title: string;
-  answerA: string;
-  answerB: string;
-  category: string;
-}
 
 export function parseTopics(): Discussion[] {
   const topics: Discussion[] = [];

@@ -1,8 +1,9 @@
 import { get, writable } from 'svelte/store';
 import { getName, getOrGenerateUserId } from './data';
-import type { NewConnectionHi } from './socket-constants';
+import type { NewConnectionHi, Discussion } from './socket-constants';
 import { onConnect, sendHi } from './sockets';
-import type { Discussion } from './topics';
+
+console.log("initializing stores");
 
 interface ClientGameState {
   discussion: Discussion;
@@ -41,3 +42,4 @@ onConnect(() => {
   };
   sendHi(newConnectionHi);
 });
+

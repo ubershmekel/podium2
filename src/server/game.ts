@@ -1,6 +1,6 @@
 
-import { Discussion, parseTopics } from '../client/topics';
-import type { Player } from '../client/socket-constants';
+import { parseTopics } from '../client/topics';
+import type { Discussion, Player } from '../client/socket-constants';
 
 interface Vote {
   user: string;
@@ -10,21 +10,48 @@ interface Vote {
 
 const topics = parseTopics();
 
+function shuffle(array: any[]) {
+  var currentIndex = array.length, temporaryValue, randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
+
+
 export class ServerGameState {
   players: {[uid: string]: Player} = {};
   topicsPlayed: string[] = [];
   scores: {[user: string]: number} = {};
   discussion: Discussion;
   activeVotes: Vote[];
+  speakerA: string;
+  speakerB: string;
 
   constructor() {
-    this.nextTopic();
+    this.nextRound();
   }
 
-  nextTopic() {
-    const chosenI = randomInt(0, topics.length);
-    this.discussion = topics[chosenI];
+  nextRound() {
+    const chosenTopicI = randomInt(0, topics.length);
+    this.discussion = topics[chosenTopicI];
     this.activeVotes = [];
+
+    const playerIds = Object.keys(this.players);
+    shuffle(playerIds);
+    this.speakerA = playerIds[0];
+    this.speakerB = playerIds[1];
   }
 
   vote(vote: Vote) {
