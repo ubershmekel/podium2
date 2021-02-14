@@ -15,6 +15,10 @@ export function sendButtonPressed(info: string) {
   socket.emit(names.buttonPress, info);
 }
 
+export function sendVote(index: number) {
+  socket.emit(names.vote, index);
+}
+
 export function sendMyNameIs(name: string) {
   socket.emit(names.nameChange, name);
 }

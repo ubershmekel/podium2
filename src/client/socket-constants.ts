@@ -9,6 +9,8 @@ export const names = {
   usersList: "usersList",
   newRound: "newRound",
   nextTopic: "nextTopic",
+  vote: "vote",
+  newVotes: "newVotes",
 }
 
 export interface PlayerNameId {
@@ -46,5 +48,14 @@ export interface NewRound {
   discussion: Discussion;
   speakerA: string;
   speakerB: string;
+  votes: UserIdToVote;
   // endTime: Date;
 }
+
+export interface AnswerState {
+  text: string;
+  speakerName: string;
+  voterNames: string[];
+}
+
+export type UserIdToVote = {[uid: string]: number};

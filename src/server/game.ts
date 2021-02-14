@@ -1,6 +1,7 @@
 
 import { getTopics } from '../client/topics';
-import type { Discussion, Player } from '../client/socket-constants';
+import type { Discussion, Player, UserIdToVote } from '../client/socket-constants';
+import { userName } from '../client/stores';
 
 interface Vote {
   user: string;
@@ -36,7 +37,7 @@ export class ServerGameState {
   topicsPlayed: string[] = [];
   scores: {[user: string]: number} = {};
   discussion: Discussion;
-  activeVotes: Vote[];
+  activeVotes: UserIdToVote;
   speakerA: string;
   speakerB: string;
 
@@ -47,7 +48,7 @@ export class ServerGameState {
   nextRound() {
     const chosenTopicI = randomInt(0, topics.length);
     this.discussion = topics[chosenTopicI];
-    this.activeVotes = [];
+    this.activeVotes = {};
 
     const playerIds = Object.keys(this.players);
     if (playerIds.length < numOfSpeakers) {
@@ -57,18 +58,11 @@ export class ServerGameState {
     shuffle(playerIds);
     this.speakerA = playerIds[0];
     this.speakerB = playerIds[1];
-    console.log("next round state", this);
+    // console.log("next round state", this);
   }
 
-  vote(vote: Vote) {
-    for (let i = 0; i < this.activeVotes.length; i++) {
-      if (this.activeVotes[i].user === vote.user) {
-        this.activeVotes[i] = vote;
-        return;
-      }
-    }
-
-    this.activeVotes.push(vote);
+  vote(userId: string, index: number) {
+    this.activeVotes[userId] = index;
   }
 }
 

@@ -1,6 +1,6 @@
 import type { Server } from 'http';
 import type socketio from 'socket.io';
-import { names, NewConnectionHi, NewRound, Player, PlayerNameId, socketPort } from '../client/socket-constants';
+import { AnswerState, names, NewConnectionHi, NewRound, Player, PlayerNameId, socketPort } from '../client/socket-constants';
 import { ServerGameState } from './game';
 
 const activeGames: {[gameId: string]: ServerGameState | undefined} = {};
@@ -32,6 +32,7 @@ function roundData(game: ServerGameState): NewRound {
     discussion: game.discussion,
     speakerA: game.speakerA,
     speakerB: game.speakerB,
+    votes: game.activeVotes,
   };
 }
 
@@ -46,11 +47,13 @@ export function onConnect(socket: socketio.Socket) {
     let game: ServerGameState;
     if (existingGame) {
       game = existingGame;
+      // send the existing game data to just this user
       socket.emit(names.newRound, roundData(game));
     } else {
       console.log("creating game");
       game = new ServerGameState();
       activeGames[gameId] = game;
+      // Send all players the new game.
       sendRoundData(game);
     }
     
@@ -78,7 +81,12 @@ export function onConnect(socket: socketio.Socket) {
         game.nextRound();
         sendRoundData(game);
       }
-      // io.emit('button pressed', msg);
+    });
+
+    socket.on(names.vote, (index: number) => {
+      console.log('vote', player ? player.userName : '-?-', index);
+      game.vote(player.userId, index);
+      sendToGamePlayers(game, names.newVotes, game.activeVotes);
     });
 
     socket.on(names.nameChange, (newName: string) => {
