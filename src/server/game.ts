@@ -1,5 +1,5 @@
 
-import { parseTopics } from '../client/topics';
+import { getTopics } from '../client/topics';
 import type { Discussion, Player } from '../client/socket-constants';
 
 interface Vote {
@@ -8,7 +8,7 @@ interface Vote {
   choice: 'a' | 'b';
 }
 
-const topics = parseTopics();
+const topics = getTopics();
 
 function shuffle(array: any[]) {
   var currentIndex = array.length, temporaryValue, randomIndex;
@@ -29,6 +29,7 @@ function shuffle(array: any[]) {
   return array;
 }
 
+export const numOfSpeakers = 2;
 
 export class ServerGameState {
   players: {[uid: string]: Player} = {};
@@ -49,9 +50,14 @@ export class ServerGameState {
     this.activeVotes = [];
 
     const playerIds = Object.keys(this.players);
+    if (playerIds.length < numOfSpeakers) {
+      console.warn("next round on a game with not enough speakers!");
+    }
+
     shuffle(playerIds);
     this.speakerA = playerIds[0];
     this.speakerB = playerIds[1];
+    console.log("next round state", this);
   }
 
   vote(vote: Vote) {

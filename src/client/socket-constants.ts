@@ -8,6 +8,7 @@ export const names = {
   userId: "userId",
   usersList: "usersList",
   newRound: "newRound",
+  nextTopic: "nextTopic",
 }
 
 export interface PlayerNameId {

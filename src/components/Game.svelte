@@ -7,7 +7,7 @@
   } from "../client/sockets";
   import { names } from "../client/socket-constants";
   import type { PlayerNameId, Discussion, NewRound } from "../client/socket-constants";
-  import { userName } from "../client/stores";
+  import { userName, clientGameState } from "../client/stores";
 
   let discussion: Discussion = {
     answerA: '',
@@ -28,7 +28,7 @@
   }
 
   function handleNextTopic() {
-    sendButtonPressed("next topic");
+    sendButtonPressed(names.nextTopic);
     console.log("happening");
     // const chosenI = randomInt(0, topics.length);
     // const chosen = topics[chosenI];
@@ -48,46 +48,18 @@
     sendButtonPressed("end round");
   }
 
-  function userIdToName(userId: string) {
-    for (const user of users) {
-      if (user.userId === userId) {
-        return user.userName;
-      }
-    }
-  }
-
-  function main() {
-    // handleNextTopic();
-
-    on(names.usersList, (userList: PlayerNameId[]) => {
-      console.log("userslist", userList);
-      users = userList;
-    });
-
-    on(names.newRound, (round: NewRound) => {
-      // discussion = newDiscussion;
-      console.log("new round", round);
-      discussion = round.discussion;
-      speakerA = userIdToName(round.speakerA);
-      speakerB = userIdToName(round.speakerB);
-    });
-
-
-  }
-
-  main();
 </script>
 
 <div class="game">
 
-  <div class="title">{discussion.title}</div>
+  <div class="title">{$clientGameState.discussion.title}</div>
 
   <button class="answer answer-text" on:click={(event) => handleAnswer(0)}
-    >{discussion.answerA} [{speakerB}]</button
+    >{$clientGameState.discussion.answerA} [{$clientGameState.speakerNames[0]}]</button
   >
-
+  
   <button class="answer answer-text" on:click={(event) => handleAnswer(1)}
-    >{discussion.answerB} [{speakerA}]</button
+    >{$clientGameState.discussion.answerB} [{$clientGameState.speakerNames[1]}]</button
   >
 
   <div class="admin">
@@ -97,7 +69,7 @@
 
   <p>
     users:
-    {#each users as user}
+    {#each $clientGameState.users as user}
       {user.userName};
     {/each}
   </p>

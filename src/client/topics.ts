@@ -1,6 +1,7 @@
 // This file contains the topics for discussion
 
 import type { Discussion } from "./socket-constants";
+import { topicsData } from "./topics-data";
 
 const topicsText = `Prostitution	Prostitution should be legal	Prostitution should be illegal	Ethics
 Death Penalty	I'm for a death penalty	I'm against a death penalty	Ethics
@@ -57,3 +58,6 @@ export function parseTopics(): Discussion[] {
   return topics;
 }
 
+export function getTopics(): Discussion[] {
+  return topicsData;
+}

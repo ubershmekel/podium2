@@ -1,15 +1,15 @@
 import { get, writable } from 'svelte/store';
 import { getName, getOrGenerateUserId } from './data';
-import type { NewConnectionHi, Discussion } from './socket-constants';
-import { onConnect, sendHi } from './sockets';
+import { NewConnectionHi, Discussion, names, PlayerNameId, NewRound } from './socket-constants';
+import { onConnect, sendHi, on } from './sockets';
 
 console.log("initializing stores");
 
 interface ClientGameState {
   discussion: Discussion;
-  speakerA: string;
-  speakerB: string;
-  users: string[],
+  speakerIds: string[];
+  speakerNames: string[];
+  users: PlayerNameId[],
 }
 
 const emptyState: ClientGameState = {
@@ -20,8 +20,8 @@ const emptyState: ClientGameState = {
     id: '',
     title: '',
   },
-  speakerA: '',
-  speakerB: '',
+  speakerIds: ['', ''],
+  speakerNames: ['', ''],
   users: [],
 }
 
@@ -41,5 +41,35 @@ onConnect(() => {
     userName: get(userName),
   };
   sendHi(newConnectionHi);
+
 });
 
+on(names.usersList, (userList: PlayerNameId[]) => {
+  console.log("userslist", userList);
+  const newState = get(clientGameState);
+  newState.users = userList;
+  clientGameState.set(newState)
+  newState.speakerNames = newState.speakerIds.map(userIdToName);
+  clientGameState.set(newState)
+});
+
+function userIdToName(userId: string): string {
+  const state = get(clientGameState);
+  for (const user of state.users) {
+    if (user.userId === userId) {
+      return user.userName;
+    }
+  }
+  return '';
+}
+
+on(names.newRound, (round: NewRound) => {
+  // discussion = newDiscussion;
+  console.log("new round", round);
+  const newState = get(clientGameState);
+  newState.discussion = round.discussion;
+  const speakerIds = [round.speakerA, round. speakerB];
+  newState.speakerIds = speakerIds;
+  newState.speakerNames = newState.speakerIds.map(userIdToName);
+  clientGameState.set(newState)
+});

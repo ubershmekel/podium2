@@ -74,7 +74,7 @@ export function onConnect(socket: socketio.Socket) {
 
     socket.on(names.buttonPress, (msg: string) => {
       console.log('button pressed', player ? player.userName : '-?-', msg);
-      if (msg === 'next topic') {
+      if (msg === names.nextTopic) {
         game.nextRound();
         sendRoundData(game);
       }
