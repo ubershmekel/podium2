@@ -34,7 +34,7 @@ export const numOfSpeakers = 2;
 
 export class ServerGameState {
   players: {[uid: string]: Player} = {};
-  topicsPlayed: string[] = [];
+  topicsPlayed: {[topicId: string]: boolean} = {};
   scores: {[user: string]: number} = {};
   discussion: Discussion;
   activeVotes: UserIdToVote;
@@ -47,7 +47,25 @@ export class ServerGameState {
 
   nextRound() {
     const chosenTopicI = randomInt(0, topics.length);
-    this.discussion = topics[chosenTopicI];
+    let found = false;
+    // Cycle through topics from a random index until you find
+    // one that was not played yet.
+    for (let i = 0; i < topics.length; i++) {
+      let discussion = topics[(chosenTopicI + i) % topics.length];
+      const topicId = discussion.id;
+      if (!this.topicsPlayed[topicId]) {
+        found = true;
+        this.discussion = discussion;
+        this.topicsPlayed[topicId] = true;
+        break;
+      }
+    }
+    if (!found) {
+      // Cycled through it all, let's start over
+      console.log("Completed a game cycle on all topics!");
+      this.discussion = topics[chosenTopicI];
+      this.topicsPlayed = {};
+    }
     this.activeVotes = {};
 
     const playerIds = Object.keys(this.players);
