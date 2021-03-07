@@ -59,14 +59,18 @@ import { identity } from "svelte/internal";
 
   {#each $clientGameState.answerStates as answer, index}
   <div class="answer">
-    <button class="answer-button" on:click={(event) => handleAnswer(index)}
-      >{answer.text}</button
-    >
+    <div class="answer-text">
+      {answer.text}
+    </div>
+
     <div class="speaker">
       Speaker: {answer.speakerName}
     </div>
 
-    <div class="votes">
+    <button class="answer-button" on:click={(event) => handleAnswer(index)}
+      >vote</button
+    
+    ><div class="votes">
     {#each answer.voterNames as voterName}
       <span class="voted">{voterName}</span>
     {/each}
@@ -129,6 +133,12 @@ import { identity } from "svelte/internal";
     transition: all 100ms;
     min-height: 3em;
     vertical-align: top;
+  }
+
+  .answer-text {
+    background-color: #ccf;
+    padding: 0.2em;
+    font-size: 1.1em;
   }
 
   .answer-button:hover {
